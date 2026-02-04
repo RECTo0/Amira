@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aèsn marwa b denya 👑</title>
+
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, Arial, sans-serif;
+      background:#f5f6ff;
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(500px, 90vw);
+      background:#fff;
+      padding:24px;
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      text-align:center;
+      position:relative;
+      z-index:2;
+    }
+
+    #question{
+      font-size:18px;
+      margin:16px 0;
+      min-height:48px;
+    }
+
+    #response{
+      font-size:20px;
+      margin-top:18px;
+      font-weight:600;
+      min-height:40px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:10px;
+    }
+
+    button{
+      border:0;
+      padding:10px 16px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:600;
+      background:#111;
+      color:#fff;
+    }
+
+    .no{
+      background:#fff;
+      color:#111;
+      border:1px solid rgba(0,0,0,.2);
+    }
+
+    /* animation pluie */
+    .drop{
+      position:fixed;
+      top:-20px;
+      font-size:22px;
+      animation: fall linear forwards;
+      z-index:1;
+    }
+
+    @keyframes fall{
+      to{
+        transform: translateY(110vh);
+        opacity:0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>👑</h1>
+
+    <div id="question">
+      Sbah nour ya a7sn amira f l3alam 💛<br>
+      n3sti mzn?
+    </div>
+
+    <div class="buttons">
+      <button onclick="answerYes()">Ah</button>
+      <button class="no" onclick="answerNo()">La</button>
+    </div>
+
+    <div id="response"></div>
+  </div>
+
+<script>
+  let step = 1;
+
+  function typeText(text, elementId, speed = 40){
+    const el = document.getElementById(elementId);
+    el.innerHTML = "";
+    let i = 0;
+
+    function typing(){
+      if(i < text.length){
+        el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+        i++;
+        setTimeout(typing, speed);
+      }
+    }
+    typing();
+  }
+
+  function answerYes(){
+    if(step === 1){
+      typeText("W kisb7ti mzn? 😊", "question");
+      step = 2;
+    } else {
+      showFinal("Ila nti sb7ti mzn idan tana sb7t mzn 😌👑", "❤️");
+    }
+  }
+
+  function answerNo(){
+    showFinal("🥺 Goulil 3lach f prv", "🥺");
+  }
+
+  function showFinal(message, emoji){
+    document.getElementById("question").style.display = "none";
+    document.querySelector(".buttons").style.display = "none";
+
+    typeText(message, "response", 35);
+    startRain(emoji);
+  }
+
+  /* pluie d’emoji */
+  function startRain(emoji){
+    setInterval(() => {
+      const drop = document.createElement("div");
+      drop.className = "drop";
+      drop.innerHTML = emoji;
+      drop.style.left = Math.random() * 100 + "vw";
+      drop.style.animationDuration = (3 + Math.random() * 2) + "s";
+      document.body.appendChild(drop);
+
+      setTimeout(() => drop.remove(), 5000);
+    }, 300);
+  }
+</script>
+
+</body>
+</html>
