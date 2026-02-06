@@ -1,159 +1,143 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ahsn Marwa b denya 👑</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>hmmmmmmmm</title>
 
-  <style>
-    body{
-      margin:0;
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      font-family: system-ui, Arial, sans-serif;
-      background:#f5f6ff;
-      overflow:hidden;
-    }
-
-    .card{
-      width:min(500px, 90vw);
-      background:#fff;
-      padding:24px;
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
-      text-align:center;
-      position:relative;
-      z-index:2;
-    }
-
-    #question{
-      font-size:18px;
-      margin:16px 0;
-      min-height:48px;
-    }
-
-    #response{
-      font-size:20px;
-      margin-top:18px;
-      font-weight:600;
-      min-height:40px;
-    }
-
-    .buttons{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      margin-top:10px;
-    }
-
-    button{
-      border:0;
-      padding:10px 16px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:600;
-      background:#111;
-      color:#fff;
-    }
-
-    .no{
-      background:#fff;
-      color:#111;
-      border:1px solid rgba(0,0,0,.2);
-    }
-
-    /* animation pluie */
-    .drop{
-      position:fixed;
-      top:-20px;
-      font-size:22px;
-      animation: fall linear forwards;
-      z-index:1;
-    }
-
-    @keyframes fall{
-      to{
-        transform: translateY(110vh);
-        opacity:0;
-      }
-    }
-  </style>
+<style>
+  body{
+    margin:0; min-height:100vh; display:grid; place-items:center;
+    font-family:system-ui, Arial, sans-serif; background:#f5f6ff;
+  }
+  .card{ text-align:center; padding:16px; }
+  .wrap{
+    position:relative;
+    width:min(420px, 92vw);
+    aspect-ratio: 16 / 10; /* garde une hauteur stable */
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+    margin: 0 auto;
+    touch-action: none; /* IMPORTANT: évite le scroll pendant le grattage */
+  }
+  .wrap img, .wrap canvas{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    display:block;
+  }
+  .wrap canvas{ cursor:grab; }
+  #message{
+    margin-top:18px;
+    font-size:20px;
+    font-weight:650;
+    opacity:0;
+    transition:opacity .6s ease;
+  }
+</style>
 </head>
 
 <body>
   <div class="card">
-    <h1>👑</h1>
+    <h2>chno kayn hna 🤔​?</h2>
 
-    <div id="question">
-      Sbah nour ya a7sn amira f l3alam ❤️❤️<br>
-      n3sti mzn?
+    <div class="wrap" id="wrap">
+      <!-- Remplace l'image par ce que tu veux -->
+      <img id="hiddenImage" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/FullMoon2010.jpg/330px-FullMoon2010.jpg" alt="surprise">
+      <canvas id="scratch"></canvas>
     </div>
 
-    <div class="buttons">
-      <button onclick="answerYes()">Ah</button>
-      <button class="no" onclick="answerNo()">La</button>
-    </div>
-
-    <div id="response"></div>
+    <div id="message">Walo ghi 9amar kaychouf f 9amar</div>
   </div>
 
 <script>
-  let step = 1;
+  const wrap = document.getElementById("wrap");
+  const canvas = document.getElementById("scratch");
+  const ctx = canvas.getContext("2d");
+  const message = document.getElementById("message");
 
-  function typeText(text, elementId, speed = 40){
-    const el = document.getElementById(elementId);
-    el.innerHTML = "";
-    let i = 0;
+  let isDrawing = false;
 
-    function typing(){
-      if(i < text.length){
-        el.innerHTML += text[i] === "\n" ? "<br>" : text[i];
-        i++;
-        setTimeout(typing, speed);
-      }
+  function resizeCanvasToDisplaySize(){
+    const rect = wrap.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    // Taille "réelle" du canvas = taille affichée * dpr
+    canvas.width  = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+
+    // On dessine en coordonnées "CSS pixels"
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Couche à gratter
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#cfcfcf";
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    ctx.fillStyle = "#8a8a8a";
+    ctx.font = "bold 22px Arial";
+    ctx.fillText("7ki tl9ay rb7a", rect.width/2 - 70, rect.height/2 + 8);
+
+    ctx.globalCompositeOperation = "destination-out";
+  }
+
+  function getPos(evt){
+    const rect = canvas.getBoundingClientRect();
+    const isTouch = evt.touches && evt.touches[0];
+    const clientX = isTouch ? evt.touches[0].clientX : evt.clientX;
+    const clientY = isTouch ? evt.touches[0].clientY : evt.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function scratchAt(x,y){
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function checkReveal(){
+    // On échantillonne des pixels (pas tous) pour aller vite
+    const w = canvas.width, h = canvas.height;
+    const img = ctx.getImageData(0, 0, w, h).data;
+
+    let transparent = 0;
+    // pas = 40 -> plus grand = plus rapide, moins précis
+    const step = 40;
+    for(let i=3; i<img.length; i += 4*step){
+      if(img[i] === 0) transparent++;
     }
-    typing();
-  }
+    const total = Math.floor(img.length / (4*step));
 
-  function answerYes(){
-    if(step === 1){
-      typeText("W kisb7ti mzn? 😊", "question");
-      step = 2;
-    } else {
-      showFinal("Ila nti sb7ti mzn idan tana sb7t mzn wdwzt as3ad lila ftarikh😌👑", "❤️");
+    if(transparent / total > 0.55){
+      canvas.style.display = "none";
+      message.style.opacity = 1;
     }
   }
 
-  function answerNo(){
-    showFinal("🥺 Goulil 3lach f prv", "🥺");
-  }
+  // Mouse
+  canvas.addEventListener("mousedown", (e)=>{ isDrawing=true; const p=getPos(e); scratchAt(p.x,p.y); checkReveal(); });
+  window.addEventListener("mouseup", ()=> isDrawing=false);
+  canvas.addEventListener("mousemove", (e)=>{
+    if(!isDrawing) return;
+    const p = getPos(e);
+    scratchAt(p.x,p.y);
+    checkReveal();
+  });
 
-  function showFinal(message, emoji){
-    document.getElementById("question").style.display = "none";
-    document.querySelector(".buttons").style.display = "none";
+  // Touch (mobile)
+  canvas.addEventListener("touchstart", (e)=>{ e.preventDefault(); isDrawing=true; const p=getPos(e); scratchAt(p.x,p.y); checkReveal(); }, {passive:false});
+  canvas.addEventListener("touchend", ()=> isDrawing=false);
+  canvas.addEventListener("touchmove", (e)=>{
+    e.preventDefault();
+    if(!isDrawing) return;
+    const p = getPos(e);
+    scratchAt(p.x,p.y);
+    checkReveal();
+  }, {passive:false});
 
-    typeText(message, "response", 35);
-    startRain(emoji);
-  }
-
-  /* pluie d’emoji */
-  function startRain(emoji){
-    setInterval(() => {
-      const drop = document.createElement("div");
-      drop.className = "drop";
-      drop.innerHTML = emoji;
-      drop.style.left = Math.random() * 100 + "vw";
-      drop.style.animationDuration = (3 + Math.random() * 2) + "s";
-      document.body.appendChild(drop);
-
-      setTimeout(() => drop.remove(), 5000);
-    }, 300);
-  }
+  // Init + resize
+  resizeCanvasToDisplaySize();
+  window.addEventListener("resize", resizeCanvasToDisplaySize);
 </script>
-
 </body>
 </html>
-
-
-
